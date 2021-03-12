@@ -1,0 +1,21 @@
+version: "1.0"
+region: us-east-1
+credentials:
+    key: ""
+    secret: ""
+stacks:
+    - name: NginxKinesisDemo
+      templates: cloudformation
+      caps:
+        - CAPABILITY_IAM
+      params:
+        - key: NginxInstanceAMI
+          value: ${EC2_AMI}
+        - key: NginxInstanceKeyPair
+          value: ${EC2_KEY_PAIR}
+        - key: NginxInstanceType
+          value: ${EC2_TYPE-t2.micro}
+        - key: MaxmindAccountID
+          value: ${MAXMIND_ACCOUNT_ID}
+        - key: MaxmindLicenseKey
+          value: ${MAXMIND_LICENSE_KEY}
