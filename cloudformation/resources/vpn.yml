@@ -8,17 +8,20 @@ Resources:
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
+
   InternetGateway:
     Type: AWS::EC2::InternetGateway
     Properties:
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
+
   VpcAttachGateway:
     Type: AWS::EC2::VPCGatewayAttachment
     Properties:
       VpcId: !Ref Vpc
       InternetGatewayId: !Ref InternetGateway
+
   Subnet:
     Type: AWS::EC2::Subnet
     Properties:
@@ -30,6 +33,7 @@ Resources:
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
+
   PublicRT:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -37,17 +41,20 @@ Resources:
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
+
   PublicRoute:
     Type: AWS::EC2::Route
     Properties:
       RouteTableId: !Ref PublicRT
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
+
   SubnetRTA:
     Type: AWS::EC2::SubnetRouteTableAssociation
     Properties:
       SubnetId: !Ref Subnet
       RouteTableId: !Ref PublicRT
+
   SecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:

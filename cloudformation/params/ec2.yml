@@ -10,10 +10,3 @@ Parameters:
   NginxInstanceKeyPair:
     Type: AWS::EC2::KeyPair::KeyName
     Description: A KeyPair to use for the EC2 instance with nginx.
-  MaxmindAccountID:
-    Type: String
-    Description: A Maxmind account ID.
-  MaxmindLicenseKey:
-    Type: String
-    Description: A Maxmind license key.
-    NoEcho: true

@@ -25,31 +25,31 @@ Resources:
           apt-get install -y nginx libnginx-mod-http-geoip2 geoipupdate
 
           cat << EOF > /etc/nginx/sites-available/default
-          geoip2 /usr/share/maxmind/GeoLite2-Country.mmdb {
-            auto_reload 30m;
-            \$geoip2_data_country_code country iso_code;
-          }
-
-          geoip2 /usr/share/maxmind/GeoLite2-City.mmdb {
-            auto_reload 30m;
-            \$geoip2_data_city_name city names en;
-          }
-
-          log_format geolog '\$remote_addr,\$geoip2_data_country_code,\$geoip2_data_city_name,"\$request","\$args"';
-
-          server {
-            server_name _;
-
-            listen 80 default_server;
-            listen [::]:80 default_server;
-
-            root /var/www/html;
-            access_log /var/log/nginx/access.log geolog buffer=32k;
-
-            location / {
-              return 204;
+            geoip2 /usr/share/maxmind/GeoLite2-Country.mmdb {
+              auto_reload 30m;
+              \$geoip2_data_country_code country iso_code;
             }
-          }
+
+            geoip2 /usr/share/maxmind/GeoLite2-City.mmdb {
+              auto_reload 30m;
+              \$geoip2_data_city_name city names en;
+            }
+
+            log_format geolog escape=json '["\$remote_addr","\$geoip2_data_country_code","\$geoip2_data_city_name","\$request","\$args"]';
+
+            server {
+              server_name _;
+
+              listen 80 default_server;
+              listen [::]:80 default_server;
+
+              root /var/www/html;
+              access_log /var/log/nginx/access.log geolog buffer=32k flush=5s;
+
+              location / {
+                return 204;
+              }
+            }
           EOF
 
           mkdir /etc/maxmind

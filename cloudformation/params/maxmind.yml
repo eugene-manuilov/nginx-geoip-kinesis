@@ -1,0 +1,8 @@
+Parameters:
+  MaxmindAccountID:
+    Type: String
+    Description: A Maxmind account ID.
+  MaxmindLicenseKey:
+    Type: String
+    Description: A Maxmind license key.
+    NoEcho: true
