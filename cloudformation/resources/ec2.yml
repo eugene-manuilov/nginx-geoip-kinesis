@@ -5,49 +5,62 @@ Resources:
       ImageId: !Ref NginxInstanceAMI
       InstanceType: !Ref NginxInstanceType
       KeyName: !Ref NginxInstanceKeyPair
-      UserData: !Base64 |
-        #!/bin/bash -ex
+      Tags:
+        - Key: Name
+          Value: !Ref AWS::StackName
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          GroupSet:
+            - !GetAtt SecurityGroup.GroupId
+          SubnetId: !Ref Subnet
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -ex
 
-        sudo su -
+          sudo su -
 
-        add-apt-repository ppa:maxmind/ppa
-        apt-get update
-        apt-get install -y nginx libnginx-mod-http-geoip2 geoipupdate
+          add-apt-repository ppa:maxmind/ppa
+          apt-get update
+          apt-get install -y nginx libnginx-mod-http-geoip2 geoipupdate
 
-        cat << EOF >> /etc/nginx/sites-available/default
-        geoip2 /usr/share/maxmind/GeoLite2-Country.mmdb {
-          auto_reload 30m;
-          $geoip2_data_country_code country iso_code;
-        }
-
-        geoip2 /usr/share/maxmind/GeoLite2-City.mmdb {
-          auto_reload 30m;
-          $geoip2_data_city_name city names en;
-        }
-
-        log_format geolog '$remote_addr,$geoip2_data_country_code,$geoip2_data_city_name,"$request","$args"';
-
-        server {
-          server_name _;
-
-          listen 80 default_server;
-          listen [::]:80 default_server;
-
-          root /var/www/html;
-          access_log /var/log/nginx/access.log geolog buffer=32k;
-
-          location / {
-            return 204;
+          cat << EOF > /etc/nginx/sites-available/default
+          geoip2 /usr/share/maxmind/GeoLite2-Country.mmdb {
+            auto_reload 30m;
+            \$geoip2_data_country_code country iso_code;
           }
-        }
-        EOF
 
-        cat << EOF >> /etc/maxmind/GeoIP.conf
-        AccountID XXXX
-        LicenseKey XXXXXX
-        EditionIDs GeoLite2-ASN GeoLite2-City GeoLite2-Country
-        DatabaseDirectory /usr/share/maxmind
-        EOF
+          geoip2 /usr/share/maxmind/GeoLite2-City.mmdb {
+            auto_reload 30m;
+            \$geoip2_data_city_name city names en;
+          }
 
-        #geoipupdate -f /etc/maxmind/GeoIP.conf
-        #service nginx restart
+          log_format geolog '\$remote_addr,\$geoip2_data_country_code,\$geoip2_data_city_name,"\$request","\$args"';
+
+          server {
+            server_name _;
+
+            listen 80 default_server;
+            listen [::]:80 default_server;
+
+            root /var/www/html;
+            access_log /var/log/nginx/access.log geolog buffer=32k;
+
+            location / {
+              return 204;
+            }
+          }
+          EOF
+
+          mkdir /etc/maxmind
+          mkdir /usr/share/maxmind
+
+          cat << EOF > /etc/maxmind/GeoIP.conf
+          AccountID ${MaxmindAccountID}
+          LicenseKey ${MaxmindLicenseKey}
+          EditionIDs GeoLite2-ASN GeoLite2-City GeoLite2-Country
+          DatabaseDirectory /usr/share/maxmind
+          EOF
+
+          geoipupdate -f /etc/maxmind/GeoIP.conf
+          service nginx restart
