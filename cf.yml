@@ -19,3 +19,5 @@ stacks:
           value: ${MAXMIND_ACCOUNT_ID}
         - key: MaxmindLicenseKey
           value: ${MAXMIND_LICENSE_KEY}
+        - key: FirehoseS3Bucket
+          value: ${FIREHOSE_S3_BUCKET}

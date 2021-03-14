@@ -1,0 +1,12 @@
+Resources: 
+  Firehose:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: !Ref AWS::StackName
+      DeliveryStreamType: DirectPut
+      S3DestinationConfiguration:
+        BucketARN: !GetAtt DataBucket.Arn
+        RoleARN: !GetAtt FirehoseRole.Arn
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 1

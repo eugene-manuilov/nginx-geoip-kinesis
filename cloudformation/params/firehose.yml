@@ -1,0 +1,4 @@
+Parameters: 
+  FirehoseS3Bucket:
+    Description: S3 Bucket name for Firehose.
+    Type: String

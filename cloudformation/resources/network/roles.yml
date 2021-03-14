@@ -1,0 +1,29 @@
+Resources:
+  NginxEC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Policies:
+        - PolicyName: FirehoseWritePolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+                - Effect: Allow
+                  Action:
+                    - firehose:PutRecord
+                    - firehose:PutRecordBatch
+                  Resource:
+                    - !GetAtt Firehose.Arn
+  NginxEC2IAMInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref NginxEC2Role

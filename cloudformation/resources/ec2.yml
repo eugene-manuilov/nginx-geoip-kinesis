@@ -5,6 +5,7 @@ Resources:
       ImageId: !Ref NginxInstanceAMI
       InstanceType: !Ref NginxInstanceType
       KeyName: !Ref NginxInstanceKeyPair
+      # IamInstanceProfile: !GetAtt NginxEC2IAMInstanceProfile.Arn
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName
@@ -23,6 +24,11 @@ Resources:
           add-apt-repository ppa:maxmind/ppa
           apt-get update
           apt-get install -y nginx libnginx-mod-http-geoip2 geoipupdate openjdk-8-jdk ant ant-optional
+          apt-get remove -y openjdk-11-jre-headless
+
+          ##
+          # Nginx
+          ##
 
           cat << EOF > /etc/nginx/sites-available/default
           geoip2 /usr/share/maxmind/GeoLite2-Country.mmdb {
@@ -52,6 +58,10 @@ Resources:
           }
           EOF
 
+          ##
+          # MaxMind Autoupdates
+          ##
+
           mkdir /etc/maxmind
           mkdir /usr/share/maxmind
 
@@ -63,9 +73,29 @@ Resources:
           EOF
 
           geoipupdate -f /etc/maxmind/GeoIP.conf
-          service nginx restart
+
+          ##
+          # AWS Kinesis Agent
+          ##
 
           wget -qO- https://github.com/awslabs/amazon-kinesis-agent/archive/2.0.1.tar.gz | tar -zx --directory=/opt
-          #pushd /opt/amazon-kinesis-agent-2.0.1
-          #./setup --install
-          #popd
+          pushd /opt/amazon-kinesis-agent-2.0.1
+          ./setup --install
+          popd
+
+          cat << EOF > /etc/aws-kinesis/agent.json
+          {
+            "cloudwatch.emitMetrics": false,
+            "kinesis.endpoint": "",
+            "firehose.endpoint": "firehose.${AWS::Region}.amazonaws.com",
+            "flows": [
+              {
+                "filePattern": "/var/log/nginx/access.log",
+                "deliveryStream": "${AWS::StackName}"
+              }
+            ]
+          }
+          EOF
+
+          service nginx restart
+          service aws-kinesis-agent restart
