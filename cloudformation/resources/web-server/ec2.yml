@@ -58,6 +58,9 @@ Resources:
           }
           EOF
 
+          service nginx restart
+          chmod +r /var/log/nginx/access.log
+
           ##
           # MaxMind Autoupdates
           ##
@@ -97,5 +100,4 @@ Resources:
           }
           EOF
 
-          service nginx restart
           service aws-kinesis-agent restart
