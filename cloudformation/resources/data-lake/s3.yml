@@ -1,5 +1,6 @@
 Resources:
   DataBucket:
     Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
     Properties: 
       BucketName: !Ref FirehoseS3Bucket
