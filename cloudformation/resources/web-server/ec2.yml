@@ -5,7 +5,7 @@ Resources:
       ImageId: !Ref NginxInstanceAMI
       InstanceType: !Ref NginxInstanceType
       KeyName: !Ref NginxInstanceKeyPair
-      # IamInstanceProfile: !GetAtt NginxEC2IAMInstanceProfile.Arn
+      IamInstanceProfile: !Ref NginxEC2IAMInstanceProfile
       Tags:
         - Key: Name
           Value: !Ref AWS::StackName

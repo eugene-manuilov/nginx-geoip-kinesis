@@ -25,5 +25,7 @@ Resources:
   NginxEC2IAMInstanceProfile:
     Type: AWS::IAM::InstanceProfile
     Properties:
+      InstanceProfileName: NginxEC2InstanceProfile
+      Path: /
       Roles:
         - !Ref NginxEC2Role

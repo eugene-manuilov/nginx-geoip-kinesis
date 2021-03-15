@@ -2,11 +2,11 @@ Parameters:
   NginxInstanceAMI:
     Type: AWS::EC2::Image::Id
     Default: ami-042e8287309f5df03
-    Description: AMI for Ubuntu 20.04 in selected region.
+    Description: AMI for Ubuntu 20.04 in the selected region.
   NginxInstanceType:
     Type: String
     Default: t2.micro
-    Description: An instance type to use for the EC2 instance with nginx.
+    Description: A type of the EC2 instance to use for the nginx server.
   NginxInstanceKeyPair:
     Type: AWS::EC2::KeyPair::KeyName
     Description: A KeyPair to use for the EC2 instance with nginx.

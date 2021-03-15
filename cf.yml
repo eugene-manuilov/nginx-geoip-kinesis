@@ -7,7 +7,7 @@ stacks:
     - name: NginxKinesisDemo
       templates: cloudformation
       caps:
-        - CAPABILITY_IAM
+        - CAPABILITY_NAMED_IAM
       params:
         - key: NginxInstanceAMI
           value: ${EC2_AMI}
